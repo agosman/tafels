@@ -1,10 +1,14 @@
 <template>
   <div class="container">
-    <div>
-      <h2 class="subtitle">
-        De tafels
-      </h2>
-    </div>
+    <h2 class="heading">
+      De tafels
+    </h2>
+    <!-- selector -->
+    <ol class="table-list">
+      <li v-for="i in 10" :key="i" class="table-item">
+        <nuxt-link :to="`/${i}`">{{ i }}</nuxt-link>
+      </li>
+    </ol>
   </div>
 </template>
 
@@ -20,20 +24,21 @@ export default {
   @apply min-h-screen flex justify-center items-center text-center mx-auto;
 }
 */
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
+
+.table-list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-column-gap: 10px;
+  grid-row-gap: 10px;
 }
 
-.subtitle {
-  font-weight: 300;
-  font-size: 42px;
-  color: #526488;
-  word-spacing: 5px;
-  padding-bottom: 15px;
+.table-item {
+  @apply text-center;
+  width: 44px;
+  height: 44px;
+  outline: 1px solid rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 </style>
