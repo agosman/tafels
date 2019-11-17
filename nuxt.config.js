@@ -1,3 +1,10 @@
+import Sass from 'sass';
+
+const customSass = {
+  implementation: Sass,
+  // fiber: Fiber,
+};
+
 // only add `router.base = '/<repository-name>/'` if `DEPLOY_ENV` is `GH_PAGES`
 const routerBase =
   process.env.DEPLOY_ENV === 'GH_PAGES'
@@ -60,6 +67,9 @@ export default {
    ** Build configuration
    */
   build: {
+    loaders: {
+      scss: customSass,
+    },
     /*
      ** You can extend webpack config here
      */

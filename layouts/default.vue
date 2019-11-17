@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="default-layout">
     <nuxt />
   </div>
 </template>
@@ -37,8 +37,31 @@ html {
 .heading {
   font-weight: 300;
   font-size: 42px;
-  color: #526488;
   word-spacing: 5px;
   padding-bottom: 15px;
+}
+.btn {
+  padding: 10px 20px;
+  background-color: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+</style>
+
+<style lang="scss" scoped>
+.default-layout {
+  background-color: #20c0c1;
+  color: #fff;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(rgba(#000, 0) 40%, rgba(#000, 0.4) 100%);
+    pointer-events: none;
+  }
 }
 </style>
