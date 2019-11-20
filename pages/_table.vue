@@ -97,10 +97,13 @@ export default {
       this.items = INDICES.map((i) => {
         const multiplier = i + 1;
         return {
+          random: Math.random(),
           multiplier,
           answer: null,
           solution: multiplier * this.table,
         };
+      }).sort((a, b) => {
+        return a.random < b.random ? -1 : 1;
       });
     },
     proceed() {
