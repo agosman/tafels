@@ -18,7 +18,10 @@
         </div>
         <div v-else>
           <h2 class="heading">Je bent klaar!</h2>
-          <h3>Je hebt er {{ score }} goed.</h3>
+          <h3>
+            Je hebt er <span class="score">{{ score }}</span> goed.
+          </h3>
+          <h4>Tijd: {{ formattedTimeSpent }}</h4>
           <button @click="onReset" class="btn restart-btn">Opnieuw beginnen</button>
         </div>
         <div class="progress">
@@ -31,6 +34,10 @@
         </div>
       </div>
     </div>
+    <div class="progress-bars">
+      <div :style="progressBarTimeStyle" class="progress-bar progress-bar-time" />
+      <div :style="progressBarQuestionsStyle" class="progress-bar progress-bar-questions" />
+    </div>
   </div>
 </template>
 
@@ -38,6 +45,7 @@
 import gsap from 'gsap';
 
 const NUM_QUESTIONS = 10;
+const MAX_TIME = 60; // in seconds
 
 const INDICES = [...Array(NUM_QUESTIONS).keys()];
 
@@ -51,6 +59,8 @@ export default {
       maxLength: 3,
       answer: '',
       items: null,
+      startTime: null,
+      timeSpent: 0,
     };
   },
   computed: {
@@ -77,6 +87,29 @@ export default {
     score() {
       return this.items.filter((item) => item.correct === true).length;
     },
+    formattedTimeSpent() {
+      const s = Math.round(this.timeSpent / 100) / 10;
+      return `${s} seconden`;
+    },
+    progress() {
+      if (!this.started) {
+        return 0;
+      }
+      return (this.currentIndex + 1) / NUM_QUESTIONS;
+    },
+    timeProgress() {
+      return Math.min(1, this.timeSpent / 1000 / MAX_TIME);
+    },
+    progressBarTimeStyle() {
+      return {
+        transform: `scaleX(${this.timeProgress})`,
+      };
+    },
+    progressBarQuestionsStyle() {
+      return {
+        transform: `scaleX(${this.progress})`,
+      };
+    },
   },
   watch: {
     currentIndex(value) {
@@ -87,7 +120,6 @@ export default {
     this.initializeItems();
   },
   updated() {
-    console.log('* updated *');
     if (!this.completed && this.started) {
       this.$refs.input.focus();
     }
@@ -114,7 +146,7 @@ export default {
       if (this.currentIndex < NUM_QUESTIONS - 1) {
         this.next();
       } else {
-        this.completed = true;
+        this.finish();
       }
     },
     next() {
@@ -132,10 +164,21 @@ export default {
         correct: this.currentItem.answer === this.currentItem.solution,
       };
       this.$set(this.items, this.currentIndex, newValue);
-      // this.currentItem.correct = this.currentItem.answer === this.currentItem.solution;
+    },
+    trackTime() {
+      this.timeSpent = Date.now() - this.startTime;
+    },
+    finish() {
+      this.timeSpent = Date.now() - this.startTime;
+      this.completed = true;
+      clearInterval(this.trackTimeInterval);
     },
     onStart() {
+      this.startTime = Date.now();
       this.started = true;
+      this.trackTimeInterval = setInterval(() => {
+        this.trackTime();
+      }, 50);
     },
     onInputBlur() {
       console.log('onInputBlur');
@@ -158,6 +201,7 @@ export default {
       this.started = false;
       this.completed = false;
       this.currentIndex = 0;
+      this.timeSpent = 0;
 
       // clear answers and correct properties
       this.initializeItems();
@@ -167,12 +211,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.table-page {
+  height: 100%;
+}
+
 input {
   border: 1px solid rgba(0, 0, 0, 0.3);
   padding: 10px 20px;
   font-size: 26px;
   color: #000;
   text-align: center;
+
+  &:focus {
+    outline: 0;
+  }
 }
 
 .title {
@@ -206,6 +258,30 @@ input {
   &.incorrect {
     background-color: #ff0000;
   }
+}
+
+.progress-bars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background-color: rgba(#000, 0.4);
+}
+
+.progress-bar {
+  height: 50%;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+.progress-bar-time {
+  background-color: rgba(#fff, 0.6);
+}
+
+.progress-bar-questions {
+  transition: transform 0.5s;
+  background-color: #ac1d72;
 }
 
 .restart-btn {

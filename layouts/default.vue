@@ -26,7 +26,7 @@ html {
 
 .container {
   margin: 0 auto;
-  min-height: 100vh;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -50,6 +50,7 @@ html {
 
 <style lang="scss" scoped>
 .default-layout {
+  height: 100vh;
   background-color: #20c0c1;
   color: #fff;
 
